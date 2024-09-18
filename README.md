@@ -1,5 +1,7 @@
 ## Bio: Hello, I am a passionate student pursuing my bachelor degree in Data Science and Computer Science. With my recent hands-on experience from my Data Science Internship, I have continued to not only develop my theoretical knowledge but practice it in real time. My experience has only furthered my passion for data analysis and programming in this dynamic field.
 
+1st Project: Aaryan's Final Code and DSCI Summer Program
+This was the coding and work I did for my recent Data Science Research Internship where we investigated how do Xavier University's students experience their core curriculum.
 <!--
 **AaryanDB/AaryanDB** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
