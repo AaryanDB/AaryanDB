@@ -1,0 +1,140 @@
+---
+title: "Registered Voters Quarto"
+format: html
+author: "Aaryan Bhatta"
+---
+
+## Library Packages
+
+```{r}
+library(tidyverse)
+library(sf)
+library(readxl)
+library(RColorBrewer)
+library(tidycensus)
+library(writexl)
+```
+
+# Introduction
+
+I am currently with the Virginia Talents Campaign and our voters of interest is quite broad. From the day we spoke to Virginia and her team, we were given the idea that her target group are just democrats in general. With this in mind, I first, determined that it would be important to look at potential first time voters. I decided to look at the age distribution of these potential voters.
+
+## Data set
+
+The Board of Elections data only had elections up to 2020 hence I decided to work with the Secretary of State Data as there are more elections to work with.
+
+```{r}
+voters.sos <-read_csv("voters_SOS.csv")
+
+voters.sos <- voters.sos %>%  
+  rename_with(~ gsub("-", ".", .))  
+```
+
+# Elections
+
+Decided to focus on the elections are similar to what we are expecting this year. So I chose elections that are not only presidential but those that have common pleas as well.
+
+```{r}
+print("-------- ELECTIONS THAT WE WILL CONSIDER IN OUR ANALYSIS ---------------------------")
+
+voters.sos = voters.sos %>% 
+  select(c(1:46,"GENERAL.11/07/2000","GENERAL.11/07/2006","GENERAL.11/06/2012","GENERAL.11/06/2018"))
+
+election.date = "2024-11-05"
+elections.cols <- 47:50
+```
+
+# List 1: Age Distribution of Potential First Time Voters
+
+Looked at potential first time voters who can be targets for Virginia Talents! The key takeaways
+
+```{r}
+first.time.voters <- voters.sos %>% 
+  filter(if_all(elections.cols, ~ . == "b")) %>% 
+  filter(AGE >= 18 & AGE <= 28)
+hist(first.time.voters$AGE,freq=T,main ="Age distribution (18-28) of those who\n have never voted in Hamilton County",xlab = "Age",ylim=c(0,25))
+
+```
+
+Writing to the file
+
+```{r}
+first.time.voters %>% 
+  write.csv(file = "targetgroup_young.csv", row.names = FALSE)
+```
+
+# List 2: Presidential vs Common Court of Pleas
+
+```{r}
+
+voters.sos <-read_csv("Hamilton.csv")
+
+voters.sos <- voters.sos %>%  
+  rename_with(~ gsub("-", ".", .))  
+
+
+voters.sos = voters.sos %>% 
+  select(c(1:46,"GENERAL.11/07/2006","GENERAL.11/04/2008","GENERAL.11/08/2016","GENERAL.11/06/2018"))
+
+  
+com.elections = c("GENERAL.11/07/2006","GENERAL.11/06/2018")
+pres.elections = c("GENERAL.11/02/2004","GENERAL.11/08/2016")
+
+n=1000
+voters.sos = voters.sos[sample(nrow(voters.sos), n), ]
+
+voters.sos <- voters.sos %>%
+  mutate(AGE = floor(as.numeric(difftime(as.Date(election.date), as.Date(DATE_OF_BIRTH), units = "days")) / 365.25))
+
+
+replace_na_with_o <- function(row) {
+  first_non_na_index <- which(!is.na(row))[1]  # Find the first non-NA value index
+  if(is.na(first_non_na_index)){
+    #If the person has never voted, replace the whole row with "b"
+    row[1:length(row)] <- 'b'
+  } else {
+    if (first_non_na_index >1) {
+      # Replace the NA values before the first vote with "b"
+      row[1:(first_non_na_index-1)] <- "b"
+    }
+    if (first_non_na_index < length(row)) {
+      # Replace only the NA values in subsequent positions with "o"
+      row[(first_non_na_index + 1):length(row)][is.na(row[(first_non_na_index + 1):length(row)])] <- "o"
+    }
+  }
+  return(row)
+}
+
+for (i in 1:nrow(voters.sos)){
+  voters.sos[i,elections.cols] = replace_na_with_o(voters.sos[i,elections.cols])
+}
+
+
+par(mfrow = c(1, 2))
+all_votes <- voters.sos %>% 
+  filter(if_all(elections.cols, ~ . == "X")) %>% 
+  filter(AGE >= 40 & AGE <= 60)
+hist(all_votes$AGE,freq=T,main ="Voters who voted in\n Presidential(2008,2016) and Common \nCourt of Pleas Elections in \nHamilton County aged (30-60) ",xlab = "Age",ylim=c(0,20))
+
+
+common_votes = voters.sos %>% 
+  filter(
+    rowSums(select(., `GENERAL.11/07/2006`, `GENERAL.11/08/2016`) == "b") == 2 &
+    (`GENERAL.11/04/2008`=="X" |  `GENERAL.11/06/2018`=="X")
+  ) %>% 
+  filter(AGE >= 30 & AGE <= 60)
+hist(common_votes$AGE,freq=T,main ="Voters who did not vote in\n Common Court of Pleas but in \nPresidential Elections \nin Hamilton County aged (30-60) ",xlab = "Age",ylim=c(0,20))
+
+par(mfrow = c(1, 1))
+
+first.time.voters %>% 
+  write.csv(file = "targetgroup_young.csv", row.names = FALSE)
+
+data_list <- list(
+  All_Votes = all_votes,
+  Common_Votes = common_votes
+)
+
+# Write to an Excel file
+write_xlsx(data_list, "voter_data.xlsx")
+```
