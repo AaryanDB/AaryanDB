@@ -1,9 +1,9 @@
 ## Bio: Hello, I am a passionate student pursuing my bachelor degree in Data Science and Computer Science. With my recent hands-on experience from my Data Science Internship and Virginia Tallent's Campaign, I have continued to not only develop my theoretical knowledge but practice it in real time. My experience has only furthered my passion for data analysis and programming in this dynamic field.
 
-1st Project: Xavier Data Science Research
+1st Project: Xavier Data Science Research##
 This was my work from the data science research internship where I investigated how do Xavier University's students experience their core curriculum. I collaborated with 8 other data science students where we looked at Xavier's retention and we looked at areas of interest in which we can improve the currciulam. We used R to explore ways to visualize unorganized data from Microsoft Excel into graphs. 
 
-2nd Project: Virginia Tallent Campaign
+2nd Project: Virginia Tallent Campaign##
 This was my most recent work where I worked on Virginia Tallent's campaign in Hamilton County. I worked alongside 2 other data sceince students where we used election data to explore similar elections like the Novemeber 2024 General Elections. I used R to visualize the election data into election maps, population density maps, and voter turnout predictions graphs.
 <!--
 **AaryanDB/AaryanDB** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
